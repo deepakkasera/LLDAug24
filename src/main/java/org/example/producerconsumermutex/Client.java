@@ -2,24 +2,28 @@ package org.example.producerconsumermutex;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Semaphore;
 
 public class Client {
     public static void main(String[] args) {
         Queue<Object> store = new ConcurrentLinkedQueue<>();
         int maxSize = 6;
 
-        Producer p1 = new Producer(store, maxSize, "P1");
-        Producer p2 = new Producer(store, maxSize, "P2");
-        Producer p3 = new Producer(store, maxSize, "P3");
-        Producer p4 = new Producer(store, maxSize, "P4");
-        Producer p5 = new Producer(store, maxSize, "P5");
-        Producer p6 = new Producer(store, maxSize, "P6");
+        Semaphore producerSemaphore = new Semaphore(maxSize);
+        Semaphore consumerSemaphore = new Semaphore(0);
 
-        Consumer c1 = new Consumer(store, maxSize, "C1");
-        Consumer c2 = new Consumer(store, maxSize, "C2");
-        Consumer c3 = new Consumer(store, maxSize, "C3");
-        Consumer c4 = new Consumer(store, maxSize, "C4");
-        Consumer c5 = new Consumer(store, maxSize, "C5");
+        Producer p1 = new Producer(store, maxSize, "P1", producerSemaphore, consumerSemaphore);
+        Producer p2 = new Producer(store, maxSize, "P2", producerSemaphore, consumerSemaphore);
+        Producer p3 = new Producer(store, maxSize, "P3", producerSemaphore, consumerSemaphore);
+        Producer p4 = new Producer(store, maxSize, "P4", producerSemaphore, consumerSemaphore);
+        Producer p5 = new Producer(store, maxSize, "P5", producerSemaphore, consumerSemaphore);
+        Producer p6 = new Producer(store, maxSize, "P6", producerSemaphore, consumerSemaphore);
+
+        Consumer c1 = new Consumer(store, maxSize, "C1", producerSemaphore, consumerSemaphore);
+        Consumer c2 = new Consumer(store, maxSize, "C2", producerSemaphore, consumerSemaphore);
+        Consumer c3 = new Consumer(store, maxSize, "C3", producerSemaphore, consumerSemaphore);
+        Consumer c4 = new Consumer(store, maxSize, "C4", producerSemaphore, consumerSemaphore);
+        Consumer c5 = new Consumer(store, maxSize, "C5", producerSemaphore, consumerSemaphore);
 
         Thread t1 = new Thread(p1);
         Thread t2 = new Thread(p2);
