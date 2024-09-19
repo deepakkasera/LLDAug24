@@ -18,6 +18,8 @@ public class Client {
             int y = scanner.nextInt();
 
             int out = x / y;
+
+            // System.exit(0); // Terminate the application.
         } catch (InputMismatchException e) {
             System.out.println("You have entered wrong input, please correct it and retry");
         } catch (ArithmeticException e) {
