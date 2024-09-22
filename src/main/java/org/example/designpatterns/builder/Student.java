@@ -8,6 +8,7 @@ public class Student {
     private int gradYear;
     private String univName;
     private int rollNumber;
+    private String address;
 
     private Student(Builder builder) {
         this.name = builder.getName();
@@ -28,6 +29,15 @@ public class Student {
         private int gradYear;
         private String univName;
         private int rollNumber;
+        private String address;
+
+        public String getAddress() {
+            return address;
+        }
+
+        public void setAddress(String address) {
+            this.address = address;
+        }
 
         public String getName() {
             return name;
