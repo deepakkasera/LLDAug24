@@ -18,5 +18,6 @@ public class Client {
         List<Integer> sortedList = sortedListFuture.get();
 
         System.out.println(sortedList);
+        executorService.close(); //without this line, the JVM is still listening in case there is any task to execute further. 
     }
 }
