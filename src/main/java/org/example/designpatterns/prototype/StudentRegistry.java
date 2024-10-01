@@ -13,4 +13,8 @@ public class StudentRegistry {
     public Student get(String key) {
         return studentMap.get(key);
     }
+
+    void fill(){
+        fillRegistry f = new fillRegistry(this); // please refer the fillregistry class added as a new file in same package 
+    }
 }
