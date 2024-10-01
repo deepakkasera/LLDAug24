@@ -21,8 +21,7 @@ public class Student implements Prototype<Student> {
 
     @Override
     public Student clone() {
-        Student student = new Student();
-        return new Student(student);
+        return new Student(this);
     }
 
 //    public String getName() {
