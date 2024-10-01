@@ -3,7 +3,8 @@ package org.example.designpatterns.prototype;
 public class Client {
     public static void main(String[] args) {
         StudentRegistry studentRegistry = new StudentRegistry();
-        fillRegistry(studentRegistry);
+        //when fillRegistry is here in same client class, i need to make changes to Client(main) everytime i have a new batch. Violating OCP. Hence i prefer to separate fill registry as a separate class. 
+        studentRegistry.fill(); 
 
         Student rajneesh = studentRegistry.get("Aug23Evening").clone();
         rajneesh.setName("Rajneesh");
@@ -18,19 +19,5 @@ public class Client {
 
         System.out.println("DEBUG");
 
-    }
-
-    private static void fillRegistry(StudentRegistry studentRegistry) {
-        Student aug23EveningBatch = new Student();
-        aug23EveningBatch.setBatch("Aug23 Evening Batch");
-        aug23EveningBatch.setAvgBatchPsp(75.0);
-
-        studentRegistry.register("Aug23Evening", aug23EveningBatch);
-
-        Student aug23EveningBatchIntelligent = new IntelligentStudent();
-        aug23EveningBatchIntelligent.setBatch("Aug23 Evening Batch");
-        aug23EveningBatchIntelligent.setAvgBatchPsp(90.0);
-
-        studentRegistry.register("Aug23EveningIntelligent", aug23EveningBatchIntelligent);
     }
 }
