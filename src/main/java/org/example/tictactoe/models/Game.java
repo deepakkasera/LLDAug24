@@ -2,7 +2,12 @@ package org.example.tictactoe.models;
 
 import org.example.tictactoe.exceptions.DuplicateSymbolFoundException;
 import org.example.tictactoe.exceptions.InvalidPlayerCountException;
+import org.example.tictactoe.strategy.gameWinningStrategy.ColumnWinningStrategy;
+import org.example.tictactoe.strategy.gameWinningStrategy.DiagonalWinningStrategy;
+import org.example.tictactoe.strategy.gameWinningStrategy.GameWinningStrategy;
+import org.example.tictactoe.strategy.gameWinningStrategy.RowWinningStrategy;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,13 +20,23 @@ public class Game {
     private Player winner;
     private int nextPlayerMoveIndex;
     private GameState gameState;
+    private List<GameWinningStrategy> winningStrategies;
 
-    private Game(int dimension, List<Player> players) {
+    private Game(int dimension, List<Player> players, List<GameWinningStrategy> winningStrategies) {
         this.board = new Board(dimension);
         this.players = players;
         this.moves = new ArrayList<>();
         this.nextPlayerMoveIndex = 0;
         this.gameState = GameState.IN_PROGRESS;
+        this.winningStrategies = winningStrategies;
+    }
+
+    public List<GameWinningStrategy> getWinningStrategies() {
+        return winningStrategies;
+    }
+
+    public void setWinningStrategies(List<GameWinningStrategy> winningStrategies) {
+        this.winningStrategies = winningStrategies;
     }
 
     public static Builder getBuilder() {
@@ -116,7 +131,24 @@ public class Game {
         nextPlayerMoveIndex %= players.size();
 
         //Check the winner.
+        if (checkWinner(board, finalMove)) {
+            gameState = GameState.ENDED;
+            winner = currentPlayer;
+        } else if (moves.size() == board.getSize() * board.getSize()) {
+            //DRAW
+            gameState = GameState.DRAW;
+        }
     }
+
+    private boolean checkWinner(Board board, Move move) {
+        ///Check all the game winning strategies.
+        for (GameWinningStrategy winningStrategy : winningStrategies) {
+            if (winningStrategy.checkWinner(board, move)) return true;
+        }
+
+        return false;
+    }
+
 
     public static class Builder {
         private int dimension;
@@ -190,7 +222,12 @@ public class Game {
 
             return new Game(
                     dimension,
-                    players
+                    players,
+                    List.of(
+                            new RowWinningStrategy(),
+                            new ColumnWinningStrategy(),
+                            new DiagonalWinningStrategy()
+                    )
             );
         }
     }
