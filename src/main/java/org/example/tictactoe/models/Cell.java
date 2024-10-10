@@ -43,4 +43,8 @@ public class Cell {
     public void setCellState(CellState cellState) {
         this.cellState = cellState;
     }
+
+    public boolean isEmpty() {
+        return this.cellState.equals(CellState.EMPTY);
+    }
 }
