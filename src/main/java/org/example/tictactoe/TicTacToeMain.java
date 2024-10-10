@@ -39,6 +39,7 @@ public class TicTacToeMain {
         }
 
         if (gameController.getGameState(game).equals(GameState.DRAW)) {
+            gameController.displayBoard(game);
             System.out.println("Game has DRAWN.");
         } else {
             //Someone has WON the game.
