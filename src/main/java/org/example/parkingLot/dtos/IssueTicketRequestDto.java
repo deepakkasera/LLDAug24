@@ -3,17 +3,17 @@ package org.example.parkingLot.dtos;
 import org.example.parkingLot.models.VehicleType;
 
 public class IssueTicketRequestDto {
-    private Long id;
+    private Long gateId;
     private String vehicleNumber;
     private VehicleType vehicleType;
     private String ownerName;
 
-    public Long getId() {
-        return id;
+    public Long getGateId() {
+        return gateId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setGateId(Long gateId) {
+        this.gateId = gateId;
     }
 
     public String getVehicleNumber() {

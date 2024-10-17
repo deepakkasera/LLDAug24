@@ -1,12 +1,14 @@
 package org.example.parkingLot.services;
 
 import org.example.parkingLot.exceptions.GateNotFoundException;
-import org.example.parkingLot.models.Gate;
-import org.example.parkingLot.models.Ticket;
-import org.example.parkingLot.models.Vehicle;
-import org.example.parkingLot.models.VehicleType;
+import org.example.parkingLot.exceptions.SpotNotAvailableException;
+import org.example.parkingLot.factories.SpotAssignmentStrategyFactory;
+import org.example.parkingLot.models.*;
 import org.example.parkingLot.repositories.GateRepository;
+import org.example.parkingLot.repositories.ParkingLotRepository;
+import org.example.parkingLot.repositories.TicketRepository;
 import org.example.parkingLot.repositories.VehicleRepository;
+import org.example.parkingLot.strategies.spotAssignmentStrategy.SpotAssignmentStrategy;
 
 import java.util.Date;
 import java.util.Optional;
@@ -14,17 +16,23 @@ import java.util.Optional;
 public class TicketService {
     private GateRepository gateRepository;
     private VehicleRepository vehicleRepository;
+    private ParkingLotRepository parkingLotRepository;
+    private TicketRepository ticketRepository;
 
     public TicketService(GateRepository gateRepository,
-                         VehicleRepository vehicleRepository) {
+                         VehicleRepository vehicleRepository,
+                         ParkingLotRepository parkingLotRepository,
+                         TicketRepository ticketRepository) {
         this.gateRepository = gateRepository;
         this.vehicleRepository = vehicleRepository;
+        this.parkingLotRepository = parkingLotRepository;
+        this.ticketRepository = ticketRepository;
     }
 
     public Ticket issueTicket(Long gateId,
                               String vehicleNumber,
                               String ownerName,
-                              VehicleType vehicleType) throws GateNotFoundException {
+                              VehicleType vehicleType) throws GateNotFoundException, SpotNotAvailableException {
 
         Ticket ticket = new Ticket();
         ticket.setEntryTime(new Date());
@@ -57,10 +65,26 @@ public class TicketService {
 
         ticket.setNumber("ticket-number");
 
+        Optional<ParkingLot> optionalParkingLot = parkingLotRepository.findByGateId(gateId);
+
+        if (optionalParkingLot.isEmpty()) {
+            throw new RuntimeException("Invalid ParkingLot");
+        }
+
+        ParkingLot parkingLot = optionalParkingLot.get();
+
+        SpotAssignmentStrategy spotAssignmentStrategy = SpotAssignmentStrategyFactory.
+                getSpotAssignmentStrategy(parkingLot.getSpotAssignmentStrategyType());
 
 
+        ParkingSpot parkingSpot = spotAssignmentStrategy.assignSpot(vehicleType, gate);
 
+        if (parkingSpot.getParkingSpotStatus().equals(ParkingSpotStatus.NOT_AVAILABLE)) {
+            throw new SpotNotAvailableException("Spot not available.");
+        }
 
-        return null;
+        ticket.setParkingSpot(parkingSpot);
+
+        return ticketRepository.save(ticket);
     }
 }
